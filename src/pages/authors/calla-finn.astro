@@ -1,0 +1,385 @@
+---
+import AuthorLandingLayout from '../../layouts/AuthorLandingLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allAuthors = await getCollection('authors');
+const allBooks = await getCollection('books');
+
+const author = allAuthors.find(a => a.data.slug === 'calla-finn')!.data;
+const books = allBooks
+  .filter(b => b.data.authorSlug === 'calla-finn')
+  .sort((a, b) => new Date(b.data.releaseDate).getTime() - new Date(a.data.releaseDate).getTime());
+
+const heroBook = books[0] ?? null;
+const latestReleases = books.slice(0, 2);
+const remainingBooks = books.slice(2);
+const social = author.socialLinks ?? {};
+---
+
+<AuthorLandingLayout title={`${author.name} | YA Contemporary Romance Author`} description={`Books by ${author.name}. Swoony first loves. Messy friendships. Hopeful hearts.`} authorName={author.name}>
+
+  <!-- HERO -->
+  <section class="cf-hero" id="books">
+    <div class="cf-hero-inner container">
+      <div class="cf-hero-text">
+        <h1 class="cf-hero-title">{heroBook ? heroBook.data.title : author.name}</h1>
+        <p class="cf-hero-tagline">Swoony first loves. Messy friendships. Hopeful hearts.</p>
+        <p class="cf-hero-blurb">{heroBook ? heroBook.data.blurb : author.bio}</p>
+        {heroBook && (
+          <a href={heroBook.data.buyLinks?.amazon ?? 'https://www.amazon.com'} class="cf-hero-btn" target="_blank" rel="noopener">
+            Start Reading
+          </a>
+        )}
+      </div>
+      {heroBook && (
+        <div class="cf-hero-cover">
+          <img src={heroBook.data.cover} alt={heroBook.data.title} />
+        </div>
+      )}
+      {!heroBook && (
+        <div class="cf-hero-cover">
+          <img src={author.photo} alt={author.name} class="cf-hero-author-photo" />
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Opt-in bar -->
+  <div class="cf-optin-bar">
+    <div class="container">
+      <div class="al-optin" id="newsletter">
+        <div class="al-optin-text">
+          <h2><mark class="cf-optin-highlight">Get a Free Book from {author.name}</mark></h2>
+          <p>Join the mailing list for exclusive content, new release alerts, and a free YA romance.</p>
+        </div>
+        <div class="al-optin-form-wrap">
+          <form class="al-optin-form" data-action="https://assets.mailerlite.com/jsonp/1623576/forms/186029699665757889/subscribe">
+            <input type="text" name="fields[name]" placeholder="First name" autocomplete="given-name" />
+            <input type="email" name="fields[email]" placeholder="Your email" autocomplete="email" required />
+            <button type="submit" class="btn al-btn-dark" style="white-space:nowrap;">Subscribe</button>
+          </form>
+          <p class="al-optin-success" style="display:none;">Thank you! Check your inbox.</p>
+          <p class="al-optin-privacy">Your information is safe. Unsubscribe anytime.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About -->
+  <section class="al-section al-section-light" id="about">
+    <div class="container">
+      <div class="author-hero">
+        <img src={author.photo} alt={author.name} class="photo" loading="lazy" />
+        <div class="bio-box">
+          <h2>{author.name}</h2>
+          <div class="genre-list">
+            {author.genres.map(g => <span class="tag">{g}</span>)}
+          </div>
+          <p class="bio-text">{author.bio}</p>
+          <div class="social-links">
+            {social.instagram && <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>}
+            {social.tiktok && <a href={social.tiktok} target="_blank" rel="noopener">TikTok</a>}
+            {social.facebook && <a href={social.facebook} target="_blank" rel="noopener">Facebook</a>}
+            {social.goodreads && <a href={social.goodreads} target="_blank" rel="noopener">Goodreads</a>}
+            {social.amazon && <a href={social.amazon} target="_blank" rel="noopener">Amazon</a>}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Releases -->
+  {latestReleases.length > 0 && (
+    <section class="al-section al-latest-releases">
+      <div class="container">
+        <div class="section-title" style="text-align:left;">
+          <span>Latest Releases</span>
+        </div>
+        <div class="al-releases-grid">
+          {latestReleases.map(book => (
+            <div class="al-release-card">
+              <div class="cover-wrap">
+                <img src={book.data.cover} alt={book.data.title} loading="lazy" />
+              </div>
+              <div class="release-info">
+                <h3><mark>{book.data.title}</mark></h3>
+                <p class="blurb">{book.data.blurb}</p>
+                {book.data.buyLinks?.amazon && (
+                  <a href={book.data.buyLinks.amazon} class="btn btn-primary" target="_blank" rel="noopener">
+                    Buy on Amazon
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Coming Soon -->
+  {author.comingSoon && (
+    <section class="al-preorder-banner" style={`background-image: url(${author.comingSoon.cover});`}>
+      <div class="al-preorder-overlay"></div>
+      <div class="al-preorder-inner container">
+        <div class="al-preorder-cover">
+          <img src={author.comingSoon.cover} alt={author.comingSoon.title} />
+        </div>
+        <div class="al-preorder-content">
+          <span class="al-preorder-label">Coming Soon</span>
+          <h2 class="al-preorder-title">{author.comingSoon.title}</h2>
+          <p class="al-preorder-blurb">{author.comingSoon.blurb}</p>
+          {author.comingSoon.preorderLink && (
+            <a href={author.comingSoon.preorderLink} class="al-preorder-btn" target="_blank" rel="noopener">
+              Pre-Order Now
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- All Books -->
+  {remainingBooks.length > 0 && (
+    <section class="al-section" id="all-books">
+      <div class="container">
+        <div class="section-title" style="text-align:left;">
+          <span>All Books</span>
+          <h2>By {author.name}</h2>
+        </div>
+        <div class="book-grid">
+          {remainingBooks.map(book => (
+            <div class="card book-card">
+              <div class="cover-wrap">
+                <img src={book.data.cover} alt={book.data.title} loading="lazy" />
+              </div>
+              <div class="info">
+                <h4>{book.data.title}</h4>
+                <span class="tag genre-tag">{book.data.genre}</span>
+                <p class="book-card-blurb">{book.data.blurb}</p>
+                {book.data.buyLinks?.amazon && (
+                  <a href={book.data.buyLinks.amazon} class="btn btn-outline book-card-btn" target="_blank" rel="noopener">
+                    Read on Amazon
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Bottom Newsletter -->
+  <section class="al-section al-bottom-newsletter cf-bottom-nl">
+    <div class="container">
+      <h2 class="al-bottom-nl-heading"><mark class="cf-highlight">Never Miss a New Release</mark></h2>
+      <p class="al-bottom-nl-desc">Join {author.name}'s mailing list for exclusive content, early cover reveals, and new release alerts delivered straight to your inbox.</p>
+      <form class="al-bottom-nl-form" data-action="https://assets.mailerlite.com/jsonp/1623576/forms/186029699665757889/subscribe">
+        <input type="text" name="fields[name]" placeholder="Your first name" autocomplete="given-name" />
+        <input type="email" name="fields[email]" placeholder="Your email address" autocomplete="email" required />
+        <button type="submit" class="btn btn-primary" style="white-space:nowrap;">Subscribe</button>
+      </form>
+      <p class="al-bottom-nl-success" style="display:none;">Thank you! Check your inbox.</p>
+      <p class="al-bottom-nl-privacy">Your information is safe. Unsubscribe anytime.</p>
+    </div>
+  </section>
+
+</AuthorLandingLayout>
+
+<style>
+  /* ── Calla Finn — Rose Romance Theme ── */
+  :global(.cf-hero) {
+    background: linear-gradient(135deg, #3D1A2E 0%, #6B2D4A 100%);
+    padding: 3rem 0;
+    overflow: hidden;
+  }
+  :global(.cf-hero-inner) {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+  }
+  :global(.cf-hero-text) { flex: 1; }
+  :global(.cf-hero-title) {
+    font-family: 'Lora', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+  :global(.cf-hero-tagline) {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #F9B8CF;
+    margin-bottom: 1.25rem;
+  }
+  :global(.cf-hero-blurb) {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: #f0d0da;
+    margin-bottom: 2rem;
+    max-width: 520px;
+  }
+  :global(.cf-hero-btn) {
+    display: inline-block;
+    padding: 1rem 3rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #3D1A2E;
+    background: #F9B8CF;
+    border: none;
+    border-radius: 4px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  :global(.cf-hero-btn):hover {
+    background: #ffffff;
+    color: #3D1A2E;
+    transform: translateY(-2px);
+  }
+  :global(.cf-hero-cover) {
+    flex: 0 0 300px;
+    align-self: center;
+  }
+  :global(.cf-hero-cover) img {
+    width: 300px;
+    display: block;
+    border-radius: 4px;
+    box-shadow: -8px 4px 30px rgba(0,0,0,0.35);
+  }
+  :global(.cf-hero-author-photo) {
+    border-radius: 50% !important;
+    object-fit: cover;
+    height: 300px;
+  }
+
+  /* Opt-in bar */
+  :global(.cf-optin-bar) {
+    background: #2C0F1E;
+    padding: 1.5rem 0;
+  }
+  :global(.cf-optin-bar) .al-optin {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  :global(.cf-optin-bar) .al-optin h2 { color: #ffffff; }
+  :global(.cf-optin-bar) .al-optin p { color: #f0d0da; }
+  :global(.cf-optin-bar) .al-optin-form input[type="text"],
+  :global(.cf-optin-bar) .al-optin-form input[type="email"] {
+    background: rgba(249,184,207,0.15);
+    border-color: #F9B8CF;
+    color: #ffffff;
+  }
+  :global(.cf-optin-bar) .al-optin-form input::placeholder { color: #F9B8CF; }
+  :global(.cf-optin-bar) .al-optin-privacy { color: #F9B8CF !important; }
+
+  :global(.cf-optin-highlight) {
+    background: linear-gradient(to top, rgba(249,184,207,0.45) 40%, transparent 40%);
+    color: inherit;
+    padding: 0 4px;
+  }
+
+  /* Accent overrides */
+  :global(.al-section) .btn-primary { background: #6B2D4A; color: #ffffff; }
+  :global(.al-section) .btn-primary:hover { background: #ffffff; color: #6B2D4A; border: 1px solid #6B2D4A; }
+  :global(.al-section) .btn-outline { border-color: #6B2D4A; color: #6B2D4A; }
+  :global(.al-section) .btn-outline:hover { background: #6B2D4A; color: #ffffff; }
+  :global(.al-section) .tag:hover, :global(.al-section) .tag.active { background: #6B2D4A; border-color: #6B2D4A; color: #ffffff; }
+  :global(.al-section) .section-title span { color: #6B2D4A; }
+  :global(.al-section) a { color: #6B2D4A; }
+  :global(.al-section) a:hover { color: #3D1A2E; }
+
+  /* Scroll-to-top */
+  :global(.al-scroll-top) { background: #6B2D4A !important; border-color: #6B2D4A !important; color: #ffffff !important; }
+  :global(.al-scroll-top):hover { background: #F9B8CF !important; border-color: #F9B8CF !important; color: #3D1A2E !important; }
+
+  /* Pre-order banner */
+  :global(.al-preorder-overlay) {
+    background: linear-gradient(to bottom, rgba(61,26,46,0.8) 0%, rgba(61,26,46,0.9) 50%, rgba(61,26,46,0.95) 100%);
+  }
+  :global(.al-preorder-label) { color: #F9B8CF; }
+  :global(.al-preorder-title) { color: #ffffff; }
+  :global(.al-preorder-blurb) { color: #f0d0da; }
+  :global(.al-preorder-btn) { background: #6B2D4A; border-color: #F9B8CF; color: #ffffff; }
+  :global(.al-preorder-btn):hover { background: #ffffff; color: #6B2D4A !important; border-color: #ffffff; transform: translateY(-2px); }
+
+  /* Latest releases marks */
+  :global(.al-release-card) .release-info h3 mark {
+    background: linear-gradient(to top, rgba(107,45,74,0.25) 40%, transparent 40%);
+    color: inherit;
+    padding: 0 4px;
+  }
+  :global(.al-latest-releases) .section-title span::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 2px;
+    width: 100%; height: 8px;
+    background: rgba(107,45,74,0.25);
+    z-index: -1;
+  }
+
+  /* Bottom newsletter */
+  :global(.cf-bottom-nl) { background: #6B2D4A !important; text-align: center; }
+  :global(.cf-bottom-nl) .al-bottom-nl-heading { color: #ffffff; font-size: 1.5rem; margin-bottom: 0.5rem; }
+  :global(.cf-highlight) {
+    background: linear-gradient(to top, rgba(249,184,207,0.45) 40%, transparent 40%);
+    color: inherit;
+    padding: 0 4px;
+  }
+  :global(.cf-bottom-nl) .al-bottom-nl-desc { color: rgba(255,255,255,0.85); font-size: 0.9375rem; line-height: 1.7; margin-bottom: var(--space-md); max-width: 520px; margin-left: auto; margin-right: auto; }
+  :global(.cf-bottom-nl) .al-bottom-nl-form { display: flex; gap: var(--space-xs); max-width: 640px; margin: 0 auto; }
+  :global(.cf-bottom-nl) .al-bottom-nl-form input[type="text"],
+  :global(.cf-bottom-nl) .al-bottom-nl-form input[type="email"] { padding: 0.75rem 1rem; border: 1px solid rgba(249,184,207,0.4); border-radius: 4px; background: rgba(249,184,207,0.15); color: #ffffff; font-size: 0.9375rem; width: 100%; }
+  :global(.cf-bottom-nl) .al-bottom-nl-form input::placeholder { color: #F9B8CF; }
+  :global(.cf-bottom-nl) .al-bottom-nl-form .btn-primary { background: #F9B8CF; color: #3D1A2E; border-color: #F9B8CF; }
+  :global(.cf-bottom-nl) .al-bottom-nl-form .btn-primary:hover { background: #ffffff; color: #3D1A2E; border-color: #ffffff; }
+  :global(.cf-bottom-nl) .al-bottom-nl-privacy { font-size: 0.75rem !important; color: #F9B8CF !important; margin-top: var(--space-xs); text-align: center; margin-bottom: 0 !important; }
+
+  @media (max-width: 768px) {
+    :global(.cf-hero-inner) { flex-direction: column-reverse; text-align: center; }
+    :global(.cf-hero-title) { font-size: 2.25rem; }
+    :global(.cf-hero-cover) { flex: none; width: 220px; }
+    :global(.cf-hero-cover) img { width: 220px; }
+    :global(.al-releases-grid) { grid-template-columns: 1fr; }
+    :global(.al-release-card) { flex-direction: column; align-items: center; text-align: center; }
+    :global(.al-bottom-nl-form) { flex-direction: column; }
+    :global(.al-preorder-inner) { flex-direction: column; text-align: center; }
+  }
+  @media (max-width: 480px) {
+    :global(.cf-hero) { padding: 2rem 0; }
+    :global(.cf-hero-title) { font-size: 1.75rem; }
+    :global(.cf-hero-cover) { width: 180px; }
+    :global(.cf-hero-cover) img { width: 180px; }
+  }
+</style>
+
+<script>
+  function setupNlForm(formSelector: string, successSelector: string) {
+    const form = document.querySelector(formSelector) as HTMLFormElement;
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const action = form.dataset.action!;
+      const email = (form.querySelector('input[type="email"]') as HTMLInputElement).value;
+      const name = (form.querySelector('input[type="text"]') as HTMLInputElement)?.value ?? '';
+      const params = new URLSearchParams();
+      params.append('fields[name]', name);
+      params.append('fields[email]', email);
+      params.append('ml-submit', '1');
+      params.append('anticsrf', 'true');
+      try { await fetch(action, { method: 'POST', body: params, mode: 'no-cors' }); } catch (_) {}
+      form.style.display = 'none';
+      const success = document.querySelector(successSelector) as HTMLElement;
+      success.style.display = 'block';
+      success.style.color = '#ffffff';
+      success.style.fontWeight = '600';
+    });
+  }
+  setupNlForm('.al-optin-form', '.al-optin-success');
+  setupNlForm('.al-bottom-nl-form', '.al-bottom-nl-success');
+</script>
