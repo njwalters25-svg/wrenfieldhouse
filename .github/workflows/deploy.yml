@@ -24,16 +24,6 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Add cpanel deployment config
-        run: |
-          cat > dist/.cpanel.yml << 'EOF'
-          ---
-          deployment:
-            tasks:
-              - export DEPLOYPATH=/home/simpxlow/public_html/
-              - /bin/cp -af . $DEPLOYPATH
-          EOF
-
       - name: Push dist to deploy branch
         uses: peaceiris/actions-gh-pages@v4
         with:
