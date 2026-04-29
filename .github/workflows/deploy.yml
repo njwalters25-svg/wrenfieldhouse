@@ -34,11 +34,10 @@ jobs:
 
       - name: Pull and deploy via cPanel API
         run: |
-          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/VersionControl/retrieve" \
-            -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}" \
-            --data-urlencode "repository_root=/home/simpxlow/repositories/wrenfieldhouse"
-          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/VersionControlDeployment/create" \
-            -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}" \
-            --data-urlencode "repository_root=/home/simpxlow/repositories/wrenfieldhouse"
-          curl -s "https://premium43.web-hosting.com:2083/json-api/cpanel?cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=AddonDomain&cpanel_jsonapi_func=modify&newdomain=wrenfieldhouse.com&dir=wrenfieldhouse.com" \
-            -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}"
+          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/VersionControl/retrieve"             -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}"             --data-urlencode "repository_root=/home/simpxlow/repositories/wrenfieldhouse"
+          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/VersionControlDeployment/create"             -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}"             --data-urlencode "repository_root=/home/simpxlow/repositories/wrenfieldhouse"
+
+      - name: Rebuild LiteSpeed vhost config
+        run: |
+          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/WebVhosts/rebuild_vhost_config"             -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}" || true
+          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/Domains/set_document_root"             -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}"             --data-urlencode "domain=wrenfieldhouse.com"             --data-urlencode "document_root=/home/simpxlow/wrenfieldhouse.com" || true
