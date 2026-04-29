@@ -2,3 +2,4 @@
 deployment:
   tasks:
     - rsync -a --exclude='.git' . /home/simpxlow/wrenfieldhouse.com/
+    - echo "DirectoryIndex index.html" > /home/simpxlow/wrenfieldhouse.com/.htaccess
