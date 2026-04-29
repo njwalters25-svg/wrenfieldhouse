@@ -31,3 +31,12 @@ jobs:
           publish_branch: deploy
           publish_dir: ./dist
           force_orphan: false
+
+      - name: Pull and deploy via cPanel API
+        run: |
+          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/VersionControl/retrieve" \
+            -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}" \
+            --data-urlencode "repository_root=/home/simpxlow/repositories/wrenfieldhouse"
+          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/VersionControlDeployment/create" \
+            -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}" \
+            --data-urlencode "repository_root=/home/simpxlow/repositories/wrenfieldhouse"
