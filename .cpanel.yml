@@ -1,5 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/simpxlow/wrenfieldhouse.com/
-    - /bin/cp -af . $DEPLOYPATH
+    - rsync -a --delete --exclude='.git' . /home/simpxlow/wrenfieldhouse.com/
+    - printf "DirectoryIndex index.html\n" > /home/simpxlow/wrenfieldhouse.com/.htaccess
+    - chmod 644 /home/simpxlow/wrenfieldhouse.com/.htaccess
