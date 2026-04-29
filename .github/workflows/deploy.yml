@@ -40,3 +40,5 @@ jobs:
           curl -s -X POST "https://premium43.web-hosting.com:2083/execute/VersionControlDeployment/create" \
             -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}" \
             --data-urlencode "repository_root=/home/simpxlow/repositories/wrenfieldhouse"
+          curl -s -X POST "https://premium43.web-hosting.com:2083/execute/WebServer/rebuild_config" \
+            -H "Authorization: cpanel simpxlow:${{ secrets.CPANEL_API_TOKEN }}"
