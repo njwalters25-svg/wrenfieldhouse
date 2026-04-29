@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/simpxlow/public_html/
+    - export DEPLOYPATH=/home/simpxlow/wrenfieldhouse.com/
     - /bin/cp -af . $DEPLOYPATH
