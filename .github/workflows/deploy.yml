@@ -24,12 +24,10 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Deploy to cPanel via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Push dist to deploy branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          server: premium43.web-hosting.com
-          username: deploy@simplylowcontent.com
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: wrenfieldhouse.com/
-          dangerous-clean-slate: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: deploy
+          publish_dir: ./dist
+          force_orphan: false
