@@ -31,5 +31,5 @@ jobs:
           username: deploy@simplylowcontent.com
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          server-dir: /wrenfieldhouse.com/
+          server-dir: /public_html/
           dangerous-clean-slate: false
