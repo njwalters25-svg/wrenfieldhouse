@@ -4,3 +4,4 @@ deployment:
     - export DEPLOYPATH=/home/simpxlow/wrenfieldhouse.com/
     - /bin/cp -af . $DEPLOYPATH
     - printf "DirectoryIndex index.html\nOptions -Indexes\n" > /home/simpxlow/wrenfieldhouse.com/.htaccess
+    - chmod 644 /home/simpxlow/wrenfieldhouse.com/.htaccess
